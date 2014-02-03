@@ -61,6 +61,9 @@ class Ability
       if team.masters.include?(user)
         rules += project_master_rules
 
+      elsif team.acceptors.include?(user)
+        rules += project_acc_rules
+
       elsif team.developers.include?(user)
         rules += project_dev_rules
 
@@ -124,8 +127,15 @@ class Ability
     def project_dev_rules
       project_report_rules + [
         :write_merge_request,
+        :accept_merge_request,
         :write_wiki,
         :push_code
+      ]
+    end
+
+    def project_acc_rules
+      project_dev_rules + [
+        :accept_merge_request_to_protected_branches
       ]
     end
 
@@ -134,14 +144,18 @@ class Ability
         :write_merge_request,
         :push_code,
         :push_code_to_protected_branches,
+        :push_tags,
+        :accept_merge_request,
+        :accept_merge_request_to_protected_branches,
         :modify_merge_request,
         :admin_merge_request
       ]
     end
 
     def project_master_rules
-      project_dev_rules + [
+      project_acc_rules + [
         :push_code_to_protected_branches,
+        :push_tags,
         :modify_issue,
         :modify_project_snippet,
         :modify_merge_request,

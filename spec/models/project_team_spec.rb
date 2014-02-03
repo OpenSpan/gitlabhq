@@ -7,6 +7,7 @@ describe ProjectTeam do
     subject { team }
 
     it { should respond_to(:developers) }
+    it { should respond_to(:acceptors) }
     it { should respond_to(:masters) }
     it { should respond_to(:reporters) }
     it { should respond_to(:guests) }

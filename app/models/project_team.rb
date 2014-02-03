@@ -84,6 +84,10 @@ class ProjectTeam
     @developers ||= fetch_members(:developers)
   end
 
+  def acceptors
+    @acceptors ||= fetch_members(:acceptors)
+  end
+
   def masters
     @masters ||= fetch_members(:masters)
   end

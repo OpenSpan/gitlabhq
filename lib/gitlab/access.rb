@@ -8,6 +8,7 @@ module Gitlab
     GUEST     = 10
     REPORTER  = 20
     DEVELOPER = 30
+    ACCEPTOR  = 35
     MASTER    = 40
     OWNER     = 50
 
@@ -21,6 +22,7 @@ module Gitlab
           "Guest"     => GUEST,
           "Reporter"  => REPORTER,
           "Developer" => DEVELOPER,
+          "Acceptor"  => ACCEPTOR,
           "Master"    => MASTER,
         }
       end
@@ -36,6 +38,7 @@ module Gitlab
           guest:     GUEST,
           reporter:  REPORTER,
           developer: DEVELOPER,
+          acceptor:  ACCEPTOR,
           master:    MASTER,
         }
       end

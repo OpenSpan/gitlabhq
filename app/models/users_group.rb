@@ -27,6 +27,7 @@ class UsersGroup < ActiveRecord::Base
   scope :guests, -> { where(group_access: GUEST) }
   scope :reporters, -> { where(group_access: REPORTER) }
   scope :developers, -> { where(group_access: DEVELOPER) }
+  scope :acceptors, -> { where(group_access: ACCEPTOR) }
   scope :masters,  -> { where(group_access: MASTER) }
   scope :owners,  -> { where(group_access: OWNER) }
 

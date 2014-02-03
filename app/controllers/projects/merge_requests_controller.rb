@@ -223,9 +223,9 @@ class Projects::MergeRequestsController < Projects::ApplicationController
 
   def allowed_to_merge?
     action = if project.protected_branch?(@merge_request.target_branch)
-               :push_code_to_protected_branches
+               :accept_merge_request_to_protected_branches
              else
-               :push_code
+               :accept_merge_request
              end
 
     can?(current_user, action, @project)
