@@ -82,13 +82,16 @@ module Grack
       when 'git-upload-pack'
         can?(user, :download_code, project)
       when'git-receive-pack'
+	if tags.empty? == false
+	  return false unless can?(user, :push_tags, project)
+	end
+
         refs.each do |ref|
           action = if project.protected_branch?(ref)
                      :push_code_to_protected_branches
                    else
                      :push_code
                    end
-
           return false unless can?(user, action, project)
         end
 
@@ -119,6 +122,10 @@ module Grack
       @refs ||= parse_refs
     end
 
+    def tags
+      @tags ||= parse_tags
+    end
+
     def parse_refs
       input = if @env["HTTP_CONTENT_ENCODING"] =~ /gzip/
                 Zlib::GzipReader.new(@request.body).read
@@ -132,11 +139,31 @@ module Grack
       # Parse refs
       refs = input.force_encoding('ascii-8bit').scan(/refs\/heads\/([\/\w\.-]+)/n).flatten.compact
 
-      # Cleanup grabare from refs
+      # Cleanup grabage from refs
       # if push to multiple branches
       refs.map do |ref|
         ref.gsub(/00.*/, "")
       end
     end
+
+    def parse_tags
+      input = if @env["HTTP_CONTENT_ENCODING"] =~ /gzip/
+                Zlib::GzipReader.new(@request.body).read
+              else
+                @request.body.read
+              end
+
+      # Need to reset seek point
+      @request.body.rewind
+
+      # Parse refs
+      tags = input.force_encoding('ascii-8bit').scan(/refs\/tags\/([\/\w\.-]+)/n).flatten.compact
+
+      # Cleanup grabage from tags
+      tags.map do |tag|
+        tag.gsub(/00.*/, "")
+      end
+    end
+
   end
 end
