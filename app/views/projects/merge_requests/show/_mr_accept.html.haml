@@ -1,6 +1,9 @@
 - unless @allowed_to_merge
   .bs-callout
-    %strong You don't have permission to merge this MR
+    %strong You don't have permission to merge this MR. Only Acceptors can merge to protected branches.
+  .automerge_widget.can_be_merged.hide
+    .bs-callout.bs-callout-success.clearfix
+      %strong This MR can be automatically merged.
 
 
 - if @show_merge_controls
@@ -37,33 +40,38 @@
                 = check_box_tag :should_remove_source_branch, "1", true
                 Remove source-branch
 
+.automerge_widget.no_satellite.hide
+  .bs-callout.bs-callout-danger
+    %span
+      %strong This repository does not have satellite. Ask an administrator to fix this issue
 
-  .automerge_widget.no_satellite.hide
-    .bs-callout.bs-callout-danger
+.automerge_widget.cannot_be_merged.hide
+  .bs-callout.bs-callout-danger
+    %h4
+      There are merge conflicts! This request cannot be automatically merged with GitLab.
+    %p
       %span
-        %strong This repository does not have satellite. Ask an administrator to fix this issue
-
-  .automerge_widget.cannot_be_merged.hide
-    .bs-callout.bs-callout-disabled
-      %h4
-        This request can't be merged with GitLab.
-      %span
-        You should do it manually with
+        Please resolve the conflicts and repush the branch. (Required for protected branches.)
         %strong
-          = link_to "command line", "#modal_merge_info", class: "how_to_merge_link", title: "How To Merge", "data-toggle" => "modal"
+          = link_to "How To Resolved Merge Conflicts command line", "#modal_resolve_merge_conflict_info", class: "how_to_resolve_merge_conflict_link", title: "How To Resolved Merge Conflicts", "data-toggle" => "modal"
+    %p
+      %span
+        If the target is an unprotected branch, you can merge manually with
+        %strong
+          = link_to "How To Merge command line", "#modal_merge_info", class: "how_to_merge_link", title: "How To Merge", "data-toggle" => "modal"
 
-  .automerge_widget.unchecked
-    .bs-callout.bs-callout-warning
-      %strong
-        %i.icon-refresh.icon-spin
-        Checking for ability to automatically merge…
-
-  .automerge_widget.already_cannot_be_merged.hide
-    .bs-callout.bs-callout-info
-      %strong This merge request already can not be merged. Try to reload page.
-
-  .merge-in-progress.hide
-    .bs-callout.bs-callout-success
+.automerge_widget.unchecked
+  .bs-callout.bs-callout-warning
+    %strong
       %i.icon-refresh.icon-spin
-      &nbsp;
-      Merge is in progress. Please wait. Page will be automatically reloaded. &nbsp;
+      Checking for ability to automatically merge…
+
+.automerge_widget.already_cannot_be_merged.hide
+  .bs-callout.bs-callout-info
+    %strong This merge request already can not be merged. Try to reload page.
+
+.merge-in-progress.hide
+  .bs-callout.bs-callout-success
+    %i.icon-refresh.icon-spin
+    &nbsp;
+    Merge is in progress. Please wait. Page will be automatically reloaded. &nbsp;

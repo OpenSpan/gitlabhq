@@ -1,6 +1,7 @@
 .merge-request
   = render "projects/merge_requests/show/mr_title"
   = render "projects/merge_requests/show/how_to_merge"
+  = render "projects/merge_requests/show/how_to_resolve_merge_conflict"
   = render "projects/merge_requests/show/mr_box"
   - if @merge_request.opened?
     - if @merge_request.source_branch_exists? && @merge_request.target_branch_exists?

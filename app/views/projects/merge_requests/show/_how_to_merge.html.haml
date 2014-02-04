@@ -13,7 +13,8 @@
             Checkout the branch we are going to merge and pull in the code
           %pre.dark
             :preserve
-              git checkout -b #{@merge_request.source_project_path}-#{@merge_request.source_branch} #{@merge_request.target_branch}
+              git fetch origin
+              git checkout -b #{@merge_request.source_project_path}-#{@merge_request.source_branch} origin/#{@merge_request.target_branch}
               git pull #{@merge_request.source_project.http_url_to_repo} #{@merge_request.source_branch}
           %p
             %strong Step 2.
@@ -21,24 +22,25 @@
           %pre.dark
             :preserve
               git checkout #{@merge_request.target_branch}
+              git reset origin/#{@merge_request.target_branch}
               git merge --no-ff #{@merge_request.source_project_path}-#{@merge_request.source_branch}
-              git push origin #{@merge_request.target_branch}
+              git push -u origin #{@merge_request.target_branch}
         - else
           %p
             %strong Step 1.
-            Update the repo and checkout the branch we are going to merge
+            Update the repo and checkout the branch we are going to merge into
           %pre.dark
             :preserve
               git fetch origin
-              git checkout -b #{@merge_request.source_branch} origin/#{@merge_request.source_branch}
+              git checkout #{@merge_request.target_branch}
+              git reset origin/#{@merge_request.target_branch}
           %p
             %strong Step 2.
             Merge the branch and push the changes to GitLab
           %pre.dark
             :preserve
-              git checkout #{@merge_request.target_branch}
-              git merge --no-ff #{@merge_request.source_branch}
-              git push origin #{@merge_request.target_branch}
+              git merge --no-ff origin/#{@merge_request.source_branch}
+              git push -u origin #{@merge_request.target_branch}
 
 
 :javascript
