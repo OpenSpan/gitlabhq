@@ -188,15 +188,6 @@ class Note < ActiveRecord::Base
     @discussion_id ||= [:discussion, noteable_type.try(:underscore), noteable_id || commit_id, line_code].join("-").to_sym
   end
 
-  # Returns true if this is a downvote note,
-  # otherwise false is returned
-  def downvote?
-    votable? && (note.include?('-1') ||
-                 note.include?(':-1:') ||
-                 note.include?(':thumbsdown:')
-                )
-  end
-
   def for_commit?
     noteable_type == "Commit"
   end
@@ -238,15 +229,44 @@ class Note < ActiveRecord::Base
     nil
   end
 
-  # Returns true if this is an upvote note,
-  # otherwise false is returned
-  def upvote?
-    votable? && (note.include?('+1') ||
-                 note.include?(':+1:') ||
-                 note.include?(':thumbsup:')
-                )
+  def contains_upvote?
+    note.include?('+1') ||
+    note.include?(':+1:') ||
+    note.include?(':thumbsup:')
   end
 
+  def contains_downvote?
+    note.include?('-1') ||
+    note.include?(':-1:') ||
+    note.include?(':thumbsdown:')
+  end
+
+  # Returns true if this is the last note by this author that contains a vote
+  def latest_vote?
+    # Ensure this note is a vote
+    return false if !contains_upvote? && !contains_downvote?
+    # Notes on this issueable by same author
+    Note.where(noteable_id: self.noteable_id, noteable_type: self.noteable_type, author_id: self.author_id).each do |noteitr|
+       # Newer note with a vote
+       return false if noteitr.created_at > self.created_at && (noteitr.contains_upvote? || noteitr.contains_downvote?)
+    end
+    # Latest note with a vote
+    return true
+  end
+
+  # Returns true if this counts as an upvote note,
+  # otherwise false is returned
+  def upvote?
+    votable? && contains_upvote? && !contains_downvote? && latest_vote?
+  end
+
+  # Returns true if this counts as a downvote note,
+  # otherwise false is returned
+  def downvote?
+    votable? && contains_downvote? && !contains_upvote? && latest_vote?
+  end
+
+  # Do not count vote if it is made by the author of the note
   def votable?
     (author != commit_author) && (for_issue? || (for_merge_request? && !for_diff_line?))
   end
