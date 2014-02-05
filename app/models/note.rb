@@ -248,7 +248,7 @@ class Note < ActiveRecord::Base
   end
 
   def votable?
-    for_issue? || (for_merge_request? && !for_diff_line?)
+    (author != commit_author) && (for_issue? || (for_merge_request? && !for_diff_line?))
   end
 
   # Mentionable override.
