@@ -12,15 +12,16 @@
     %div
       = link_to_member(@project, note.author, avatar: false)
       - if note.for_merge_request?
-        - if note.diff
+        - if note.active?
           started a discussion on this merge request diff
           = link_to_merge_request_diff_line_note(note)
         - else
-          started
+          started an
           %strong
             %i.icon-remove
             outdated
           discussion on this merge request diff
+          = link_to_merge_request_diff_line_note(note)
       - elsif note.for_commit?
         started a discussion on commit
         #{link_to note.noteable.short_id, project_commit_path(note.project, note.noteable)}
