@@ -67,9 +67,9 @@
           - next unless file.respond_to?('text?')
           - if file.text?
             - if params[:view] == 'parallel'
-              = render "projects/commits/parallel_view", diff: diff, project: project, file: file, index: i
+              = render "projects/commits/parallel_view", diff: diff, project: project, file: file, index: i, noteable_id_for_comments: noteable_id_for_comments
             - else
-              = render "projects/commits/text_file", diff: diff, index: i
+              = render "projects/commits/text_file", diff: diff, index: i, noteable_id_for_comments: noteable_id_for_comments
           - elsif file.image?
             - old_file = project.repository.blob_at(@commit.parent_id, diff.old_path) if @commit.parent_id
             = render "projects/commits/image", diff: diff, old_file: old_file, file: file, index: i

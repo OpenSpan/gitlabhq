@@ -19,7 +19,7 @@
 
   - unless @diffs.empty?
     %h4 Diff
-    = render "projects/commits/diffs", diffs: @diffs, project: @project
+    = render "projects/commits/diffs", diffs: @diffs, project: @project, noteable_id_for_comments: @commits.first.id
 - else
   .light-well
     %center

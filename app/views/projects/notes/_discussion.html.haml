@@ -1,5 +1,5 @@
 - note = discussion_notes.first
-.discussion.js-details-container.js-toggler-container{:class => note.discussion_id.to_s + (note.for_diff_line? && !note.active? ? " on" : " open").to_s }
+.discussion.js-details-container.js-toggler-container{:class => note.discussion_id.to_s + (note.for_diff_line? && !note.active?(@merge_request.last_commit) ? " on" : " open").to_s }
   .discussion-header
     .discussion-actions
       = link_to "javascript:;", class: "js-details-target turn-on js-toggler-target" do
@@ -47,12 +47,12 @@
     -# will be shown when the other one is hidden
     .discussion-hidden.content.hide
       .note
-        - if note.active?
+        - if note.active?(@merge_request.last_commit)
           %em Hidden discussion.
         - else
           %strong
             %i.icon-remove
-            Outdated discussion.
+            Discussion outdated by more recent commit.
         = link_to "javascript:;", class: "js-details-target js-toggler-target" do
           %i.icon-eye-open
           Show

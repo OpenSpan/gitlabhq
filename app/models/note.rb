@@ -39,7 +39,7 @@ class Note < ActiveRecord::Base
   validates :attachment, file_size: { maximum: 10.megabytes.to_i }
 
   validates :noteable_id, presence: true, if: ->(n) { n.noteable_type.present? && n.noteable_type != 'Commit' }
-  validates :commit_id, presence: true, if: ->(n) { n.noteable_type == 'Commit' }
+  validates :commit_id, presence: true, if: ->(n) { n.noteable_type == 'Commit' || n.noteable_type == 'MergeRequest' }
 
   mount_uploader :attachment, AttachmentUploader
 
@@ -150,10 +150,30 @@ class Note < ActiveRecord::Base
     @diff ||= Gitlab::Git::Diff.new(st_diff) if st_diff.respond_to?(:map)
   end
 
-  def active?
-    # TODO: determine if discussion is outdated
-    # according to recent MR diff or not
-    true
+  def active?(latest_commit)
+    # No commit from time of comment available, can't follow revisions
+    return true if commit_id.blank?
+    compare = Gitlab::Git::Compare.new(project.repository.raw_repository, self.commit_id, latest_commit.id)
+    # Compare failed
+    return true if (defined?(compare)).nil?
+    # No change, still active
+    return true if compare.same
+    # Look for this file in each file diff
+    compare.diffs.each do |diff|
+      # Match same file (across rename)
+      if self.diff.new_path == diff.old_path
+        # Look for commented line
+        Gitlab::DiffParser.new(diff).each do |full_line, type, line_code, line_new, line_old|
+          #Same line number
+          if self.diff_new_line == line_old
+            return true if type == "match"
+            return false
+          end
+        end
+      end
+    end
+    # File not found in diff, has not been changed since the comment
+    return true
   end
 
   def diff_file_index
