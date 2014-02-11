@@ -164,10 +164,11 @@ class Note < ActiveRecord::Base
       if self.diff.new_path == diff.old_path
         # Look for commented line
         Gitlab::DiffParser.new(diff).each do |full_line, type, line_code, line_new, line_old|
-          #Same line number
-          if self.diff_new_line == line_old
+          #Same line number, skip new lines that may be false match on line number
+          if self.diff_new_line == line_old && type != "new"
+            #Line we are looking for should either match or be old and replaced by something else
             return true if type == "match"
-            return false
+            return false if type == "old"
           end
         end
       end
