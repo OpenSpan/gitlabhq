@@ -256,7 +256,7 @@ class MergeRequest < ActiveRecord::Base
   end
 
   def disallow_source_branch_removal?
-    (source_project.root_ref? source_branch) || for_fork?
+    (source_project.root_ref? source_branch) || for_fork? || project.protected_branch?(source_branch)
   end
 
   def project
