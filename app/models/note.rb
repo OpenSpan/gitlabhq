@@ -152,12 +152,14 @@ class Note < ActiveRecord::Base
 
   def active?(latest_commit)
     # No commit from time of comment available, can't follow revisions
-    return true if commit_id.blank?
+    return true if self.commit_id.blank?
     compare = Gitlab::Git::Compare.new(project.repository.raw_repository, self.commit_id, latest_commit.id)
     # Compare failed
     return true if (defined?(compare)).nil?
     # No change, still active
     return true if compare.same
+    # Diff for this note not found
+    return true if (defined?(self.diff)).nil?
     # Look for this file in each file diff
     compare.diffs.each do |diff|
       # Match same file (across rename)
