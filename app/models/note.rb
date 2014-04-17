@@ -159,7 +159,7 @@ class Note < ActiveRecord::Base
     # No change, still active
     return true if compare.same
     # Diff for this note not found
-    return true if (defined?(self.diff)).nil?
+    return true if self.diff.blank?
     # Look for this file in each file diff
     compare.diffs.each do |diff|
       # Match same file (across rename)
