@@ -27,11 +27,13 @@
           %p
             %strong Step 3.
             Run your tests.
-            Ruby test examples:
+            %br For native and managed code, build the solutions and run the application to test the changes.
+            %br For Ruby code, run the automated tests, review the results, and test the changes.
+            %br Ruby test examples:
           %pre.dark
             :preserve
               bundle exec cucumber
-              env RAILS_ENV=test bundle exec rake spec:javascript
+              env POLTERGEIST=1 RAILS_ENV=test bundle exec rake spec:javascript
               bundle exec rspec spec
           %p
             %strong Step 4.
@@ -54,13 +56,13 @@
           %p
             %strong Step 3.
             Run your tests.
-            For native and managed code, build the solutions and run the application to test the changes.
-            For Ruby code, run the automated tests, review the results, and test the changes.
-            Ruby test examples:
+            %br For native and managed code, build the solutions and run the application to test the changes.
+            %br For Ruby code, run the automated tests, review the results, and test the changes.
+            %br Ruby test examples:
           %pre.dark
             :preserve
               bundle exec cucumber
-              env RAILS_ENV=test bundle exec rake spec:javascript
+              env POLTERGEIST=1 RAILS_ENV=test bundle exec rake spec:javascript
               bundle exec rspec spec
           %p
             %strong Step 4.
