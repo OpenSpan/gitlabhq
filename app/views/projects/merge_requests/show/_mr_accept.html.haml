@@ -13,7 +13,12 @@
         %h4
           You can accept this request automatically.
         %p
-          If you still want to do it manually -
+          If you want to run tests on a branch that simulates the post-merge state -
+          %strong
+            = link_to "click here", "#modal_simulate_merge_info", class: "how_to_simulate_merge_link vlink", title: "How To Simulate the Merge Locally", "data-toggle" => "modal"
+          for instructions.
+
+          If you still want to merge the branch manually -
           %strong
             = link_to "click here", "#modal_merge_info", class: "how_to_merge_link vlink", title: "How To Merge", "data-toggle" => "modal"
           for instructions.
