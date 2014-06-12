@@ -129,7 +129,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     # Clear mergable status
     @merge_request.mark_as_unchecked
     # Reload page so that the background check executes
-    redirect_to [@merge_request.target_project, @merge_request], notice: 'Merge request was successfully updated.'
+    redirect_to [@merge_request.target_project, @merge_request], notice: 'Rechecking mergeable status of Merge Request.'
   end
 
   def automerge
