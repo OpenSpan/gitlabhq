@@ -90,7 +90,10 @@ module Gitlab
 
       # Clear the working directory
       def clear_working_dir!
-        repo.git.reset(hard: true)
+        # Resets index and working tree, staged changes and unstaged changes to tracked files discarded
+        repo.git.reset(:hard => true)
+        # Cleans out untracked files, directories, and ignored files
+        repo.git.clean({:d => true, :x => true, :force => true})
       end
 
       # Deletes all branches except the parking branch
