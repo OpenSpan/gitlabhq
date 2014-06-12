@@ -266,6 +266,7 @@ Gitlab::Application.routes.draw do
           get :diffs
           get :automerge
           get :automerge_check
+          get :force_automerge_recheck
           get :ci_status
         end
 

@@ -126,8 +126,12 @@ class MergeRequest < ActiveRecord::Base
 
   def check_if_can_be_merged
     if Gitlab::Satellite::MergeAction.new(self.author, self).can_be_merged?
+      # Ensure the state changes to mergeable
+      mark_as_unchecked
       mark_as_mergeable
     else
+      # Ensure the state changes to unmergeable
+      mark_as_unchecked
       mark_as_unmergeable
     end
   end

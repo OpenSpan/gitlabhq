@@ -62,6 +62,11 @@
           = link_to "How To Resolved Merge Conflicts command line", "#modal_resolve_merge_conflict_info", class: "how_to_resolve_merge_conflict_link", title: "How To Resolved Merge Conflicts", "data-toggle" => "modal"
     %p
       %span
+        If you do not find any conflicts and you think GitLab is reporting this conflict state in error, you can force this merge request to be re-evaluated by clicking this link:
+        %strong
+          = link_to 'Force recheck', force_automerge_recheck_project_merge_request_path(@project, @merge_request), action: "force_automerge_recheck", class: "force_automerge_recheck_link", title: "Force recheck of mergable status"
+    %p
+      %span
         If the target is an unprotected branch, you can merge manually with
         %strong
           = link_to "How To Merge command line", "#modal_merge_info", class: "how_to_merge_link", title: "How To Merge", "data-toggle" => "modal"

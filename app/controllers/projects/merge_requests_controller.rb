@@ -2,7 +2,7 @@ require 'gitlab/satellite/satellite'
 
 class Projects::MergeRequestsController < Projects::ApplicationController
   before_filter :module_enabled
-  before_filter :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :ci_status]
+  before_filter :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :force_automerge_recheck, :ci_status]
   before_filter :closes_issues, only: [:edit, :update, :show, :diffs]
   before_filter :validates_merge_request, only: [:show, :diffs]
   before_filter :define_show_vars, only: [:show, :diffs]
@@ -123,6 +123,13 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     render json: {merge_status: @merge_request.merge_status_name}
   rescue Gitlab::SatelliteNotExistError
     render json: {merge_status: :no_satellite}
+  end
+
+  def force_automerge_recheck
+    # Clear mergable status
+    @merge_request.mark_as_unchecked
+    # Reload page so that the background check executes
+    redirect_to [@merge_request.target_project, @merge_request], notice: 'Merge request was successfully updated.'
   end
 
   def automerge
