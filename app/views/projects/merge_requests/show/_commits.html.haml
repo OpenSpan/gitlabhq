@@ -20,6 +20,9 @@
         %ul.well-list
           - @commits.each do |commit|
             = render "projects/commits/commit", commit: commit, project: @merge_request.source_project
+    %div.clgray
+      If you do not find the latest commit in the list above, you can reload the diff by clicking this link:
+      = link_to 'Force reload diff', force_diff_reload_project_merge_request_path(@project, @merge_request), action: "force_diff_reload", class: "force_diff_reload_link", title: "Force reload diff"
 
 - else
   %h4.nothing_here_message
