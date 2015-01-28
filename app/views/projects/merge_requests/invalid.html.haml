@@ -2,22 +2,31 @@
   = render "projects/merge_requests/show/mr_title"
   = render "projects/merge_requests/show/mr_box"
 
-  .alert.alert-danger
-    %p
-      We cannot render this merge request properly because
-      - if @merge_request.for_fork? && !@merge_request.source_project
-        fork project was removed
-      - elsif !@merge_request.source_branch_exists?
+  - if !@merge_request.for_fork? && !@merge_request.source_branch_exists? && @merge_request.closed? && @merge_request.commits.empty?
+    .alert.alert-info
+      %p
+        We cannot render this merge request because
         %span.label.label-inverse= @merge_request.source_branch
-        does not exist in
-        %span.label.label-info= @merge_request.source_project_path
-      - elsif !@merge_request.target_branch_exists?
+        was removed without generating a diff against
         %span.label.label-inverse= @merge_request.target_branch
-        does not exist in
-        %span.label.label-info= @merge_request.target_project_path
-      - else
-        of internal error
+  - else
+    .alert.alert-danger
+      %p
+        We cannot render this merge request properly because
+        - if @merge_request.for_fork? && !@merge_request.source_project
+          fork project was removed
+        - elsif !@merge_request.source_branch_exists?
+          %span.label.label-inverse= @merge_request.source_branch
+          does not exist in
+          %span.label.label-info= @merge_request.source_project_path
+        - elsif !@merge_request.target_branch_exists?
+          %span.label.label-inverse= @merge_request.target_branch
+          does not exist in
+          %span.label.label-info= @merge_request.target_project_path
+        - else
+          of internal error
 
-    %strong
-      Please close Merge Request or change branches with existing one
+      -if !@merge_request.closed?
+        %strong
+          Please close Merge Request or change branches with existing one
 

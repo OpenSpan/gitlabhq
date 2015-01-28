@@ -2,7 +2,7 @@ require 'gitlab/satellite/satellite'
 
 class Projects::MergeRequestsController < Projects::ApplicationController
   before_filter :module_enabled
-  before_filter :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :force_automerge_recheck, :force_diff_reload, :ci_status]
+  before_filter :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :force_automerge_recheck, :force_diff_reload, :close_empty, :ci_status]
   before_filter :closes_issues, only: [:edit, :update, :show, :diffs]
   before_filter :validates_merge_request, only: [:show, :diffs]
   before_filter :define_show_vars, only: [:show, :diffs]
@@ -153,6 +153,20 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     end
   end
 
+  def close_empty
+    return access_denied! unless allowed_to_delete_branch?
+
+    if @merge_request.opened? && @merge_request.can_be_merged? && @merge_request.commits.empty?
+      @merge_request.should_remove_source_branch = true
+      @merge_request.close_empty!(current_user)
+      # Reload page so that the closed status is shown
+      redirect_to [@merge_request.target_project, @merge_request], notice: 'Closing Merge Request.'
+    else
+      # Reload page so that the new commits are shown
+      redirect_to [@merge_request.target_project, @merge_request], notice: 'Failed to close due to new commits. Refreshing Merge Request.'
+    end
+  end
+
   def branch_from
     #This is always source
     @source_project = @merge_request.nil? ? @project : @merge_request.source_project
@@ -234,6 +248,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     @commits = @merge_request.commits
 
     @allowed_to_merge = allowed_to_merge?
+    @allowed_to_delete_branch = allowed_to_delete_branch?
     @show_merge_controls = @merge_request.opened? && @commits.any? && @allowed_to_merge
   end
 
@@ -245,6 +260,12 @@ class Projects::MergeRequestsController < Projects::ApplicationController
              end
 
     can?(current_user, action, @project)
+  end
+
+  def allowed_to_delete_branch?
+    return false if project.protected_branch?(@merge_request.source_branch)
+
+    can?(current_user, :accept_merge_request, @project)
   end
 
   def invalid_mr

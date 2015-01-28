@@ -268,6 +268,7 @@ Gitlab::Application.routes.draw do
           get :automerge_check
           get :force_automerge_recheck
           get :force_diff_reload
+          post :close_empty
           get :ci_status
         end
 

@@ -30,4 +30,7 @@
     %span.label-branch #{@merge_request.source_branch}
     to
     %span.label-branch #{@merge_request.target_branch}
+    - if @allowed_to_delete_branch
+      %div
+        = button_to 'Remove source branch and close', close_empty_project_merge_request_path(@project, @merge_request), action: "close_empty", class: "btn btn-remove close_empty", title: "Remove source branch and close"
   %br

@@ -44,6 +44,33 @@ module Gitlab
         handle_exception(ex)
       end
 
+      # Removes the source branch when there is nothign to merge
+      #   if requested in the merge request (and this is permitted by the merge request).
+      #
+      # Returns false if pushing from the satellite to the repository failed or was rejected
+      # Returns true otherwise
+      def close_empty!
+        in_locked_and_timed_satellite do |merge_repo|
+          prepare_satellite!(merge_repo)
+
+          if !merge_repo.commits_between("#{merge_request.target_branch}", "#{merge_request.source_branch}").empty?
+            raise "Attempt to remove branch when commits present in diff in satellite MergeRequest.id:[#{merge_request.id}]"
+          end
+
+          # remove source branch
+          if merge_request.should_remove_source_branch && !project.root_ref?(merge_request.source_branch)
+            # will raise CommandFailed when push fails
+            merge_repo.git.push(default_options, :origin, ":#{merge_request.source_branch}")
+          else
+            raise "Attempt to remove branch when not marked for removal or root reference in satellite MergeRequest.id:[#{merge_request.id}]"
+          end
+          # branch removal successful
+          true
+        end
+      rescue Grit::Git::CommandFailed => ex
+        handle_exception(ex)
+      end
+
       # Get a raw diff of the source to the target
       def diff_in_satellite
         in_locked_and_timed_satellite do |merge_repo|

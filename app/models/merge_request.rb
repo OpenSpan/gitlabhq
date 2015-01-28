@@ -228,6 +228,16 @@ class MergeRequest < ActiveRecord::Base
     false
   end
 
+  def close_empty!(current_user)
+    if Gitlab::Satellite::MergeAction.new(current_user, self).close_empty! && self.unmerged_commits.empty?
+      close
+      true
+    end
+  rescue
+    mark_as_unmergeable
+    false
+  end
+
   def mr_and_commit_notes
     commit_ids = commits.map(&:id)
     project.notes.where(
