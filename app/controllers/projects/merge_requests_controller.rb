@@ -135,6 +135,8 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   def force_diff_reload
     # Clear and reload diff
     @merge_request.reload_code
+    @merge_request.mark_as_unchecked
+    @merge_request.reset_events_cache
     # Reload page so that the new commits are shown
     redirect_to [@merge_request.target_project, @merge_request], notice: 'Reloading commits for Merge Request.'
   end
